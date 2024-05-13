@@ -9,11 +9,12 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    private lazy var tableView: UITableView = {
+    lazy var tableView: UITableView = {
         let table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
         table.delegate = self
         table.dataSource = self
+        table.rowHeight = 500
         table.separatorStyle = .none
         table.register(MovieTableViewCell.self, forCellReuseIdentifier: MovieTableViewCell.reuseIdentifier)
         return table
@@ -23,26 +24,33 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemCyan
+        view.addSubview(tableView)
+        let topTableViewConstraint = tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+        let bottomTableViewConstraint = tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        let leftTableViewConstraint = tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor)
+        let rightTableViewConstraint = tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         
-        setupViews()
-        setupConstraints()
+        topTableViewConstraint.isActive = true
+        bottomTableViewConstraint.isActive = true
+        leftTableViewConstraint.isActive = true
+        rightTableViewConstraint.isActive = true
         apiRequest()
     }
     
-    func setupViews() {
-        view.addSubview(tableView)
-    }
-    
-    func setupConstraints() {
-        
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
-    }
+//    func setupViews() {
+//        view.addSubview(tableView)
+//    }
+//    
+//    func setupConstraints() {
+//        
+//        NSLayoutConstraint.activate([
+//            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+//            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+//            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+//        ])
+//    }
     
     func apiRequest() {
         let session = URLSession(configuration: .default)
@@ -87,7 +95,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
                 if let data = try? Data(contentsOf: url)
                 {
                     DispatchQueue.main.async {
-                        let movie = MovieModel(titleLabel: title, image: UIImage(data: data))
+                        let movie = MovieTitle(titleLabel: title, image: UIImage(data: data))
                         cell.conf(movie: movie)
                     }
                 }
