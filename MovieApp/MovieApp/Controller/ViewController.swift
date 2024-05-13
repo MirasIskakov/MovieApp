@@ -23,9 +23,11 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
         
         setupViews()
         setupConstraints()
+        apiRequest()
     }
     
     func setupViews() {
@@ -42,16 +44,55 @@ class ViewController: UIViewController {
         ])
     }
     
+    func apiRequest() {
+        let session = URLSession(configuration: .default)
+        lazy var urlComponent: URLComponents = {
+            var component = URLComponents()
+            component.scheme = "https"
+            component.host = "api.themoviedb.org"
+            component.path = "/3/movie/upcoming"
+            component.queryItems = [
+                URLQueryItem(name: "api_key", value: "53f2b8593c9cbda990834e04c51c64e8")
+            ]
+            return component
+        }()
+        guard let requestUrl = urlComponent.url else { return }
+        let task = session.dataTask(with: requestUrl) {
+            data, response, error in
+            guard let data = data else { return }
+            if let movie = try? JSONDecoder().decode(MovieModel.self, from: data)
+            {
+                DispatchQueue.main.async {
+                    self.movieData = movie.results
+                    self.tableView.reloadData()
+                }
+            }
+        }
+        task.resume()
+    }
+    
 }
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        <#code#>
+        movieData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        <#code#>
+        let cell = tableView.dequeueReusableCell(withIdentifier: MovieTableViewCell.reuseIdentifier, for: indexPath) as! MovieTableViewCell
+        let title = movieData[indexPath.row].title
+        let urlImageString = "https://image.tmdb.org/t/p/w500" + movieData[indexPath.row].posterPath
+        if let url = URL(string: urlImageString) {
+            DispatchQueue.global(qos: .userInitiated).async {
+                if let data = try? Data(contentsOf: url)
+                {
+                    DispatchQueue.main.async {
+                        let movie = MovieModel(titleLabel: title, image: UIImage(data: data))
+                        cell.conf(movie: movie)
+                    }
+                }
+            }
+        }
+        return cell
     }
-    
-    
 }
