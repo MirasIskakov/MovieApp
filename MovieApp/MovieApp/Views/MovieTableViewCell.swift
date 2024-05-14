@@ -60,7 +60,7 @@ class MovieTableViewCell: UITableViewCell {
 }
 
 // MARK: - extension
-extension UITableViewCell {
+extension MovieTableViewCell {
     static var reuseIdentifier: String {
         return String(describing: self)
     }
