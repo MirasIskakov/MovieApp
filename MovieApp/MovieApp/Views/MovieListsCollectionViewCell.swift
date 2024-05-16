@@ -9,14 +9,13 @@ import UIKit
 
 class MovieListsCollectionViewCell: UICollectionViewCell {
     
-    private lazy var labelML: UILabel = {
+    lazy var labelML: UILabel = {
         let button = UILabel()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.font = UIFont.preferredFont(forTextStyle: .footnote)
+        button.font = UIFont.systemFont(ofSize: 10, weight: .light)
         button.textAlignment = .center
         button.layer.masksToBounds = true
         button.layer.cornerRadius = 11
-        button.backgroundColor = .black
         return button
     }()
     override init(frame: CGRect) {
@@ -30,7 +29,7 @@ class MovieListsCollectionViewCell: UICollectionViewCell {
     
     func setupCell() {
         contentView.addSubview(labelML)
-        contentView.backgroundColor = .systemGray3
+        contentView.backgroundColor = .systemGray4
         contentView.layer.cornerRadius = 11
         contentView.layer.masksToBounds = true
         

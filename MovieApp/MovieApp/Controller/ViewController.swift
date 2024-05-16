@@ -9,7 +9,10 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    private lazy var labelCollectionCell: UILabel = {
+    var themeData: [String] = ["Popular", "Now Playing", "Upcoming", "Top Rated"]
+    var movieData: [MovieModelResult] = []
+    
+    private lazy var labelTheme: UILabel = {
         let label = UILabel()
         label.text = "Theme"
         label.textAlignment = .left
@@ -25,7 +28,7 @@ class ViewController: UIViewController {
         return layout
     }()
     
-    lazy var collectionView: UICollectionView = {
+    lazy var collectionViewOfTheme: UICollectionView = {
         let collection = UICollectionView(frame: .zero,
                                           collectionViewLayout: self.layout)
         collection.dataSource = self
@@ -47,40 +50,41 @@ class ViewController: UIViewController {
         return table
     }()
     
-    var movieData: [MovieModelResult] = []
-    
+//    MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
         apiRequest()
     }
     
+//    MARK: - setupView
     func setupView() {
         view.backgroundColor = .white
-        view.addSubview(labelCollectionCell)
-        view.addSubview(collectionView)
+        view.addSubview(labelTheme)
+        view.addSubview(collectionViewOfTheme)
         view.addSubview(tableView)
         
         NSLayoutConstraint.activate([
             
-            labelCollectionCell.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            labelCollectionCell.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            labelCollectionCell.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            labelCollectionCell.heightAnchor.constraint(equalToConstant: 16),
+            labelTheme.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            labelTheme.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            labelTheme.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            labelTheme.heightAnchor.constraint(equalToConstant: 16),
             
             
-            collectionView.topAnchor.constraint(equalTo: labelCollectionCell.bottomAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            collectionView.heightAnchor.constraint(equalToConstant: 40),
+            collectionViewOfTheme.topAnchor.constraint(equalTo: labelTheme.bottomAnchor),
+            collectionViewOfTheme.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            collectionViewOfTheme.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            collectionViewOfTheme.heightAnchor.constraint(equalToConstant: 40),
             
-            tableView.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: -10),
+            tableView.topAnchor.constraint(equalTo: collectionViewOfTheme.bottomAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
 
+//    MARK: - Network
     func apiRequest() {
         let session = URLSession(configuration: .default)
         lazy var urlComponent: URLComponents = {
@@ -109,27 +113,40 @@ class ViewController: UIViewController {
     }
 }
 
+// MARK: - extension CollectionView
 extension ViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        4
+        themeData.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieListsCollectionViewCell.reuseIdentifier, for: indexPath) as! MovieListsCollectionViewCell
+        let cell = self.collectionViewOfTheme.dequeueReusableCell(withReuseIdentifier: MovieListsCollectionViewCell.reuseIdentifier, for: indexPath) as! MovieListsCollectionViewCell
+        cell.labelML.text = themeData[indexPath.row]
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let cell = collectionView.cellForItem(at: indexPath) as! MovieListsCollectionViewCell
+        cell.contentView.backgroundColor = .red
+        cell.isSelected = true
+        cell.labelML.textColor = .white
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        if let cell = collectionView.cellForItem(at: indexPath) as? MovieListsCollectionViewCell {
+            cell.contentView.backgroundColor = .systemGray4
+            cell.isSelected = false
+            cell.labelML.textColor = .black
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         CGSize(width: 74, height: 22)
     }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0)
-    }
 }
 
 
-
+// MARK: - extension TableView
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         movieData.count
