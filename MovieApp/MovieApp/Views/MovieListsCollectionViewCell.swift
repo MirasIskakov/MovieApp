@@ -30,7 +30,9 @@ class MovieListsCollectionViewCell: UICollectionViewCell {
     
     func setupCell() {
         contentView.addSubview(labelML)
+        contentView.backgroundColor = .systemGray3
         contentView.layer.cornerRadius = 11
+        contentView.layer.masksToBounds = true
         
         NSLayoutConstraint.activate([
             labelML.topAnchor.constraint(equalTo: contentView.topAnchor),
