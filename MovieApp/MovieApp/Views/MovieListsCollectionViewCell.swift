@@ -9,12 +9,14 @@ import UIKit
 
 class MovieListsCollectionViewCell: UICollectionViewCell {
     
-    private lazy var buttonML: UIButton = {
-        let button = UIButton()
+    private lazy var labelML: UILabel = {
+        let button = UILabel()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = .systemRed
+        button.font = UIFont.preferredFont(forTextStyle: .footnote)
+        button.textAlignment = .center
         button.layer.masksToBounds = true
         button.layer.cornerRadius = 11
+        button.backgroundColor = .black
         return button
     }()
     override init(frame: CGRect) {
@@ -27,14 +29,14 @@ class MovieListsCollectionViewCell: UICollectionViewCell {
     }
     
     func setupCell() {
-        
-        contentView.addSubview(buttonML)
+        contentView.addSubview(labelML)
+        contentView.layer.cornerRadius = 11
         
         NSLayoutConstraint.activate([
-            buttonML.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 9),
-            buttonML.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
-            buttonML.heightAnchor.constraint(equalToConstant: 22),
-            buttonML.widthAnchor.constraint(equalToConstant: 74),
+            labelML.topAnchor.constraint(equalTo: contentView.topAnchor),
+            labelML.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            labelML.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            labelML.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
         ])
     }
 }

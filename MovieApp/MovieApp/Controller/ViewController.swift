@@ -21,7 +21,7 @@ class ViewController: UIViewController {
     private lazy var layout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 30
+        layout.minimumLineSpacing = 8
         return layout
     }()
     
@@ -29,6 +29,7 @@ class ViewController: UIViewController {
         let collection = UICollectionView(frame: .zero,
                                           collectionViewLayout: self.layout)
         collection.dataSource = self
+        collection.delegate = self
         collection.translatesAutoresizingMaskIntoConstraints = false
         collection.register(MovieListsCollectionViewCell.self, forCellWithReuseIdentifier: MovieListsCollectionViewCell.reuseIdentifier)
         
@@ -63,9 +64,9 @@ class ViewController: UIViewController {
         NSLayoutConstraint.activate([
             
             labelCollectionCell.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            labelCollectionCell.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 6),
+            labelCollectionCell.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             labelCollectionCell.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            labelCollectionCell.heightAnchor.constraint(equalToConstant: 30),
+            labelCollectionCell.heightAnchor.constraint(equalToConstant: 16),
             
             
             collectionView.topAnchor.constraint(equalTo: labelCollectionCell.bottomAnchor),
@@ -108,7 +109,7 @@ class ViewController: UIViewController {
     }
 }
 
-extension ViewController: UICollectionViewDataSource {
+extension ViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         4
     }
@@ -118,8 +119,16 @@ extension ViewController: UICollectionViewDataSource {
         return cell
     }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        CGSize(width: 74, height: 22)
+    }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0)
+    }
 }
+
+
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -136,11 +145,21 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
                 {
                     DispatchQueue.main.async {
                         let movie = MovieTitle(titleLabel: title, image: UIImage(data: data))
-                        cell.conf(movie: movie)
+                        cell.config(movie: movie)
                     }
                 }
             }
         }
         return cell
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let selectedMovie = movieData[indexPath.row]
+        
+        let movieDetailVC = DetailViewController()
+        
+        movieDetailVC.movieID = selectedMovie.id
+        
+        self.navigationController?.pushViewController(movieDetailVC, animated: true)
     }
 }

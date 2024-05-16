@@ -34,7 +34,7 @@ class MovieTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func conf(movie: MovieTitle) {
+    func config(movie: MovieTitle) {
         titleLabel.text = movie.titleLabel
         movieImage.image = movie.image
     }
