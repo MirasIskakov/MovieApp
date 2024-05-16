@@ -8,7 +8,7 @@
 import Foundation
 
 // MARK: - TopRated
-struct TopRated: Codable {
+struct TopRatedModel: Codable {
     let page: Int
     let results: [MovieModelResult]
     let totalPages, totalResults: Int
