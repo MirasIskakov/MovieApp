@@ -282,6 +282,8 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         }
         return cell
     }
+    
+//    MARK: - DetailViewController
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let selectedMovie = movieData[indexPath.row]
