@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 class DetailViewController: UIViewController {
     
@@ -39,6 +40,13 @@ class DetailViewController: UIViewController {
         return label
     }()
     
+    lazy var stackReleseView: UIStackView = {
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .vertical
+        return stack
+    }()
+    
     lazy var realeseDateLabel: UILabel = {
        let label = UILabel()
         label.textAlignment = .left
@@ -56,9 +64,12 @@ class DetailViewController: UIViewController {
         collection.translatesAutoresizingMaskIntoConstraints = false
         collection.dataSource = self
         collection.delegate = self
+        collection.backgroundColor = .blue
+        collection.register(GenreCollectionViewCell.self, forCellWithReuseIdentifier: GenreCollectionViewCell.identifier)
         return collection
     }()
     
+    //    MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -67,6 +78,7 @@ class DetailViewController: UIViewController {
         apiRequest()
     }
     
+    //    MARK: - Network
     func apiRequest() {
         let session = URLSession(configuration: .default)
         lazy var urlComponent: URLComponents = {
@@ -109,57 +121,85 @@ class DetailViewController: UIViewController {
         }
     }
 
+    
+    //    MARK: - setupLayout
     func setupLayout() {
-        lazy var stackReleseView: UIStackView = {
-            let stack = UIStackView()
-            stack.translatesAutoresizingMaskIntoConstraints = false
-            stack.axis = .vertical
-            return stack
-        }()
-        
+        // Добавление подвижного представления и элементов на главное представление
         view.addSubview(stackReleseView)
         view.addSubview(scrollMovieDetail)
+        
+        // Добавление изображения и заголовка на подвижное представление
         scrollMovieDetail.addSubview(detailImage)
         scrollMovieDetail.addSubview(detailTitle)
+        
+        // Добавление стека и его элементов на подвижное представление
         scrollMovieDetail.addSubview(stackReleseView)
         stackReleseView.addSubview(realeseDateLabel)
         stackReleseView.addSubview(genreCollectionView)
-
         
-        
+        // Активация ограничений
         NSLayoutConstraint.activate([
+            // Ограничения для подвижного представления
             scrollMovieDetail.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollMovieDetail.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             scrollMovieDetail.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            scrollMovieDetail.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            scrollMovieDetail.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            // Ограничения для изображения
             detailImage.topAnchor.constraint(equalTo: scrollMovieDetail.topAnchor),
             detailImage.leadingAnchor.constraint(equalTo: scrollMovieDetail.leadingAnchor, constant: 32),
             detailImage.trailingAnchor.constraint(equalTo: scrollMovieDetail.trailingAnchor, constant: -32),
             detailImage.heightAnchor.constraint(equalToConstant: 424),
+            detailImage.widthAnchor.constraint(equalToConstant: 309),
+            
+            // Ограничения для заголовка
             detailTitle.topAnchor.constraint(equalTo: detailImage.bottomAnchor, constant: 17),
-            detailTitle.leadingAnchor.constraint(equalTo: scrollMovieDetail.leadingAnchor,constant: 32),
+            detailTitle.leadingAnchor.constraint(equalTo: scrollMovieDetail.leadingAnchor, constant: 32),
             detailTitle.trailingAnchor.constraint(equalTo: scrollMovieDetail.trailingAnchor, constant: -32),
-            stackReleseView.topAnchor.constraint(equalTo: detailTitle.bottomAnchor,constant: 17),
-            stackReleseView.leadingAnchor.constraint(equalTo:  scrollMovieDetail.leadingAnchor,constant: 32),
+            
+            stackReleseView.topAnchor.constraint(equalTo: detailTitle.bottomAnchor, constant: 17),
+            stackReleseView.leadingAnchor.constraint(equalTo: scrollMovieDetail.leadingAnchor, constant: 32),
             stackReleseView.trailingAnchor.constraint(equalTo: scrollMovieDetail.trailingAnchor, constant: -32),
             stackReleseView.bottomAnchor.constraint(equalTo: scrollMovieDetail.bottomAnchor, constant: -17),
-            detailImage.widthAnchor.constraint(equalToConstant: 309)
+            
+//            // Ограничения для даты выпуска
+//            realeseDateLabel.topAnchor.constraint(equalTo: detailTitle.bottomAnchor, constant: 17),
+//            realeseDateLabel.leadingAnchor.constraint(equalTo: stackReleseView.leadingAnchor, constant: 32),
+//            realeseDateLabel.trailingAnchor.constraint(equalTo: stackReleseView.trailingAnchor, constant: -32),
+//            realeseDateLabel.bottomAnchor.constraint(equalTo: genreCollectionView.bottomAnchor, constant: -17),
+//            
+//            // Ограничения для коллекции жанров
+//            genreCollectionView.topAnchor.constraint(equalTo: realeseDateLabel.bottomAnchor, constant: 17),
+//            genreCollectionView.leadingAnchor.constraint(equalTo: stackReleseView.leadingAnchor, constant: 32),
+//            genreCollectionView.trailingAnchor.constraint(equalTo: stackReleseView.trailingAnchor, constant: -32),
+//            genreCollectionView.bottomAnchor.constraint(equalTo: stackReleseView.bottomAnchor, constant: -17),
         ])
+        realeseDateLabel.snp.makeConstraints { make in
+            make.leading.trailing.top.equalToSuperview()
+        }
+        genreCollectionView.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.top.equalTo(realeseDateLabel.snp.bottom)
+            make.height.equalTo(22)
+        }
     }
-    
-   
-
 }
 
 
-extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         movieData?.genres?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = UICollectionViewCell()
+        let cell = genreCollectionView.dequeueReusableCell(withReuseIdentifier: GenreCollectionViewCell.identifier, for: indexPath) as! GenreCollectionViewCell
+        guard let genre = movieData?.genres?[indexPath.row].name else { return UICollectionViewCell() }
+        cell.label.text = genre
         
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 60, height: 22)
     }
 }
