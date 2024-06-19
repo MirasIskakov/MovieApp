@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 class MovieListsCollectionViewCell: UICollectionViewCell {
     
@@ -20,25 +21,27 @@ class MovieListsCollectionViewCell: UICollectionViewCell {
     }()
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupCell()
+        setupUIViews()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupCell() {
+    private func setupUIViews() {
         contentView.addSubview(labelML)
-        contentView.backgroundColor = .systemGray4
-        contentView.layer.cornerRadius = 11
-        contentView.layer.masksToBounds = true
+        contentView.layer.cornerRadius = 12
         
-        NSLayoutConstraint.activate([
-            labelML.topAnchor.constraint(equalTo: contentView.topAnchor),
-            labelML.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            labelML.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            labelML.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-        ])
+        labelML.snp.makeConstraints { make in
+            make.top.leading.trailing.bottom.equalToSuperview()
+        }
+        
+    }
+    
+    func changeTitle(title: String, isSelected: Bool) {
+        labelML.textColor = isSelected ? .white : .black
+        contentView.backgroundColor = isSelected ? .red : .systemGray5
+        labelML.text = title
     }
 }
 

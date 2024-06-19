@@ -25,6 +25,12 @@ class MovieTableViewCell: UITableViewCell {
         return image
     }()
     
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.hidesWhenStopped = true
+        return indicator
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupLayout()
@@ -38,6 +44,20 @@ class MovieTableViewCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func conf(title: String, posterPath: String) {
+        titleLabel.text = title
+        startLoadingImage()
+        NetworkManager.shared.loadImage(posterPath: posterPath) { result in
+            self.movieImage.image = result
+        }
+        activityIndicator.stopAnimating()
+    }
+    
+    func startLoadingImage() {
+        activityIndicator.startAnimating()
+        movieImage.image = nil
     }
     
     func config(movie: MovieTitle) {

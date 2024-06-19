@@ -16,7 +16,6 @@ class DetailViewController: UIViewController {
     
     lazy var scrollMovieDetail: UIScrollView = {
         let scroll = UIScrollView()
-        scroll.translatesAutoresizingMaskIntoConstraints = false
         scroll.showsHorizontalScrollIndicator = false
         scroll.showsVerticalScrollIndicator = true
         
@@ -25,7 +24,6 @@ class DetailViewController: UIViewController {
     
     private lazy var detailImage: UIImageView = {
         let image = UIImageView()
-        image.translatesAutoresizingMaskIntoConstraints = false
         image.layer.masksToBounds = true
         image.layer.cornerRadius = 30
         return image
@@ -36,13 +34,11 @@ class DetailViewController: UIViewController {
         label.textAlignment = .center
         label.numberOfLines = 0
         label.font = UIFont.systemFont(ofSize: 48, weight: .bold)
-        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     lazy var stackReleseView: UIStackView = {
         let stack = UIStackView()
-        stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .vertical
         return stack
     }()
@@ -51,8 +47,6 @@ class DetailViewController: UIViewController {
        let label = UILabel()
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 15, weight: .medium)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        
         return label
     }()
     
@@ -61,7 +55,6 @@ class DetailViewController: UIViewController {
         layout.scrollDirection = .horizontal
         
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collection.translatesAutoresizingMaskIntoConstraints = false
         collection.dataSource = self
         collection.delegate = self
         collection.backgroundColor = .blue
@@ -138,42 +131,32 @@ class DetailViewController: UIViewController {
         stackReleseView.addSubview(genreCollectionView)
         
         // Активация ограничений
-        NSLayoutConstraint.activate([
-            // Ограничения для подвижного представления
-            scrollMovieDetail.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollMovieDetail.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            scrollMovieDetail.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            scrollMovieDetail.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
-            // Ограничения для изображения
-            detailImage.topAnchor.constraint(equalTo: scrollMovieDetail.topAnchor),
-            detailImage.leadingAnchor.constraint(equalTo: scrollMovieDetail.leadingAnchor, constant: 32),
-            detailImage.trailingAnchor.constraint(equalTo: scrollMovieDetail.trailingAnchor, constant: -32),
-            detailImage.heightAnchor.constraint(equalToConstant: 424),
-            detailImage.widthAnchor.constraint(equalToConstant: 309),
-            
-            // Ограничения для заголовка
-            detailTitle.topAnchor.constraint(equalTo: detailImage.bottomAnchor, constant: 17),
-            detailTitle.leadingAnchor.constraint(equalTo: scrollMovieDetail.leadingAnchor, constant: 32),
-            detailTitle.trailingAnchor.constraint(equalTo: scrollMovieDetail.trailingAnchor, constant: -32),
-            
-            stackReleseView.topAnchor.constraint(equalTo: detailTitle.bottomAnchor, constant: 17),
-            stackReleseView.leadingAnchor.constraint(equalTo: scrollMovieDetail.leadingAnchor, constant: 32),
-            stackReleseView.trailingAnchor.constraint(equalTo: scrollMovieDetail.trailingAnchor, constant: -32),
-            stackReleseView.bottomAnchor.constraint(equalTo: scrollMovieDetail.bottomAnchor, constant: -17),
-            
-//            // Ограничения для даты выпуска
-//            realeseDateLabel.topAnchor.constraint(equalTo: detailTitle.bottomAnchor, constant: 17),
-//            realeseDateLabel.leadingAnchor.constraint(equalTo: stackReleseView.leadingAnchor, constant: 32),
-//            realeseDateLabel.trailingAnchor.constraint(equalTo: stackReleseView.trailingAnchor, constant: -32),
-//            realeseDateLabel.bottomAnchor.constraint(equalTo: genreCollectionView.bottomAnchor, constant: -17),
-//            
-//            // Ограничения для коллекции жанров
-//            genreCollectionView.topAnchor.constraint(equalTo: realeseDateLabel.bottomAnchor, constant: 17),
-//            genreCollectionView.leadingAnchor.constraint(equalTo: stackReleseView.leadingAnchor, constant: 32),
-//            genreCollectionView.trailingAnchor.constraint(equalTo: stackReleseView.trailingAnchor, constant: -32),
-//            genreCollectionView.bottomAnchor.constraint(equalTo: stackReleseView.bottomAnchor, constant: -17),
-        ])
+        scrollMovieDetail.snp.makeConstraints { make in
+            make.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        detailImage.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.centerX.equalToSuperview()
+            make.leading.equalToSuperview().offset(32)
+            make.trailing.equalToSuperview().offset(-32)
+            make.height.equalTo(424)
+            make.width.equalTo(309)
+        }
+        
+        detailTitle.snp.makeConstraints { make in
+            make.top.equalTo(detailImage.snp.bottom).offset(17)
+            make.leading.equalToSuperview().offset(32)
+            make.trailing.equalToSuperview().inset(32)
+        }
+        
+        stackReleseView.snp.makeConstraints { make in
+            make.top.equalTo(detailTitle.snp.bottom).offset(17)
+            make.leading.equalToSuperview().offset(32)
+            make.trailing.equalToSuperview().inset(32)
+            make.bottom.equalToSuperview().offset(-17)
+        }
+        
         realeseDateLabel.snp.makeConstraints { make in
             make.leading.trailing.top.equalToSuperview()
         }
