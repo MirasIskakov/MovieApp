@@ -8,6 +8,7 @@ target 'MovieApp' do
   # Pods for MovieApp
 	pod 'SnapKit', '~> 5.0.0'
 	pod 'Alamofire'
+	pod 'lottie-ios'
 
 post_install do |installer|
   installer.pods_project.build_configurations.each do |config|

@@ -6,11 +6,34 @@
 //
 
 import UIKit
+import SnapKit
+import CoreData
+import Lottie
 
 class ViewController: UIViewController {
     
-    private let themes: [MovieTheme] = [.popular, .upcoming, .nowPlaying, .topRated]
     var movieData: [Results] = []
+    
+    private var favoriteMovie: [NSManagedObject] = []
+    
+    private var labelXPosition: Constraint!
+    private var labelYPosition: Constraint!
+    
+    private lazy var movieLabel: UILabel = {
+        let label = UILabel()
+        label.text = "MovieDB"
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 36, weight: .bold)
+        return label
+    }()
+    
+    private lazy var disappearView: UIView = {
+        let view = UIView()
+        view.alpha = 0
+        return view
+    }()
+    
+    private let themes: [MovieTheme] = [.popular, .upcoming, .nowPlaying, .topRated]
     
     private var currentTheme = MovieTheme.popular
     
