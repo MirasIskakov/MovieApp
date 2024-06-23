@@ -54,10 +54,13 @@ class ViewController: UIViewController {
     }()
     
     lazy var collectionViewOfTheme: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
         let collection = UICollectionView(frame: .zero,
-                                          collectionViewLayout: self.layout)
+                                          collectionViewLayout: layout)
         collection.dataSource = self
         collection.delegate = self
+        collection.allowsMultipleSelection = false
         collection.translatesAutoresizingMaskIntoConstraints = false
         collection.register(MovieListsCollectionViewCell.self, forCellWithReuseIdentifier: MovieListsCollectionViewCell.reuseIdentifier)
         
@@ -73,6 +76,15 @@ class ViewController: UIViewController {
         table.separatorStyle = .none
         table.register(MovieTableViewCell.self, forCellReuseIdentifier: MovieTableViewCell.reuseIdentifier)
         return table
+    }()
+    
+    var errorAnimation: LottieAnimationView = {
+        let animation = LottieAnimationView()
+        animation = .init(name: "catinbox")
+        animation.animationSpeed = 0.5
+        animation.loopMode = .loop
+        animation.play()
+        return animation
     }()
     
 //    MARK: - Life Cycle
@@ -93,6 +105,21 @@ class ViewController: UIViewController {
         NetworkManager.shared.loadMovies(theme: theme) { [weak self] result in
             self?.movieData = result
             self?.tableView.reloadData()
+        }
+    }
+    
+    func saveFavorites(movie: Results) {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let context = appDelegate.persistantContainer.viewContext
+        guard let entity = NSEntityDescription.entity(forEntityName: "Favorites", in: context) else { return }
+        let favoriteManager = NSManagedObject(entity: entity, insertInto: context)
+        favoriteManager.setValue(movie.id, forKey: "movieId")
+        favoriteManager.setValue(movie.posterPath, forKey: "posterPath")
+        favoriteManager.setValue(movie.title, forKey: "title")
+        do {
+            try context.save()
+        } catch {
+            print("error save")
         }
     }
     
